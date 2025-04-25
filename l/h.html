@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kosinus Funktsiyasining Grafigi</title>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <h1>Kosinus Funktsiyasining Grafigi Toshtemirova Sarvara Mustaqil ishi</h1>
+
+    <div id="plotly-graph"></div>
+
+    <!-- Kalkulyator -->
+    <div class="calculator">
+        <h3>Kosinus Kalkulyatori</h3>
+        <input type="number" id="degreeInput" placeholder="Gradusni kiriting (°)" />
+        <button onclick="calculateCos()">Hisoblash</button>
+        <div class="result" id="result"></div>
+    </div>
+
+    <script>
+        var x = [];
+        var y = [];
+
+        for (var i = -2 * Math.PI; i <= 2 * Math.PI; i += 0.1) {
+            x.push(i);
+            y.push(Math.cos(i));
+        }
+
+        var anglesDegrees = [0, 30, 45, 60, 90, 120, 150, 180, 210, 240, 270, 300, 330, 360];
+        var anglesRadians = anglesDegrees.map(function(degree) {
+            return degree * (Math.PI / 180);
+        });
+        var specialYValues = anglesRadians.map(function(angle) {
+            return Math.cos(angle);
+        });
+
+        var extremeX = [-Math.PI / 2, Math.PI / 2];
+        var extremeY = [-1, 1];
+
+        var data = [
+            {
+                x: x,
+                y: y,
+                type: 'scatter',
+                mode: 'lines',
+                name: 'cos(x)',
+                line: {color: '#FF6F61'}
+            },
+            {
+                x: anglesRadians,
+                y: specialYValues,
+                mode: 'markers+text',
+                type: 'scatter',
+                name: 'Maxsus qiymatlar',
+                text: anglesDegrees.map(function(degree) {
+                    return degree + "°";
+                }),
+                textposition: 'top center',
+                marker: {color: '#FFB347', size: 12}
+            },
+            {
+                x: extremeX,
+                y: extremeY,
+                mode: 'markers+text',
+                type: 'scatter',
+                name: 'Maksimal va minimal qiymatlar',
+                text: ['cos(x) = -1', 'cos(x) = 1'],
+                textposition: 'bottom center',
+                marker: {color: '#00BFFF', size: 12}
+            }
+        ];
+
+        var layout = {
+            title: 'Kosinus Funktsiyasining Grafigi',
+            xaxis: {
+                title: 'x (radianlarda)',
+                tickvals: [-2*Math.PI, -Math.PI, -Math.PI/2, 0, Math.PI/2, Math.PI, 2*Math.PI],
+                ticktext: ['-2π', '-π', '-π/2', '0', 'π/2', 'π', '2π']
+            },
+            yaxis: {
+                title: 'cos(x)',
+                tickvals: [-1, 0, 1],
+                ticktext: ['-1', '0', '1']
+            },
+            paper_bgcolor: "rgba(255, 255, 255, 0.9)",
+            plot_bgcolor: "rgba(255, 255, 255, 0.9)"
+        };
+
+        Plotly.newPlot('plotly-graph', data, layout);
+
+        function calculateCos() {
+            var degree = document.getElementById('degreeInput').value;
+            if (degree === '') {
+                document.getElementById('result').innerHTML = 'Iltimos, gradusni kiriting.';
+                return;
+            }
+
+            var radians = degree * (Math.PI / 180);
+            var cosValue = Math.cos(radians);
+
+            document.getElementById('result').innerHTML = 
+                'Gradus: ' + degree + '°<br>' +
+                'Radian: ' + radians.toFixed(4) + ' rad<br>' +
+                'Kosinus: ' + cosValue.toFixed(4);
+
+            addRedPoint(radians, cosValue);
+        }
+
+        function addRedPoint(radians, cosValue) {
+            var redPointData = {
+                x: [radians],
+                y: [cosValue],
+                mode: 'markers',
+                type: 'scatter',
+                name: 'Kiritilgan qiymat',
+                marker: {color: 'red', size: 12}
+            };
+
+            Plotly.addTraces('plotly-graph', redPointData);
+        }
+    </script>
+</body>
+</html>
